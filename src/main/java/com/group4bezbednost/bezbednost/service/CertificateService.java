@@ -97,15 +97,6 @@ public class CertificateService {
 				issueralias, 
 				keyStorePassword.toCharArray(), 
 				issuerpass.toCharArray());
-		if(issuer==null){
-			
-			System.out.println("jbg issuer je null");
-		}else
-			
-		{
-			
-			System.out.println(issuer.getX500name()+"ovo je kao bio ispis");
-		}
 		
 				
 		

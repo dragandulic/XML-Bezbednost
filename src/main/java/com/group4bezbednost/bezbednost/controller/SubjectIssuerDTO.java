@@ -15,6 +15,41 @@ public class SubjectIssuerDTO {
 	String endDate;
 	String issueralias;
 	String issuerpassword;
+	
+	/*
+{
+  "name": "marko",
+  "surname": "juric",                       POSTMAN / SIGNED
+  "organization": "acompany",
+  "state": "ns",
+  "email": "msa@gmail.com",
+  "password": "ev",
+  "serialnumber": "867887",
+  "optionalCompanyName": "acomp",
+  "startDate": "2017-12-31",
+  "endDate": "2018-12-31",
+  "issueralias": "acompan",
+  "issuerpassword": "evegr"
+
+}
+
+	 */
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public String getName() {
 		return name;
 	}

@@ -14,6 +14,39 @@ public class SubjectDTO {
 	String optionalCompanyName;
 	String startDate;
 	String endDate;
+	
+	
+	/*
+	{
+   "name": "dragan",                 POSTMAN / SELF SIGNED
+   "surname": "dulic",
+   "organization": "acompany",
+   "state": "ns",
+   "email": "da@gmail.com",
+   "password": "evegr",
+   "serialnumber": "8637",
+   "optionalCompanyName": "acompan",
+   "startDate": "2017-12-31",
+   "endDate": "2018-12-31"
+}
+
+	 */
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public SubjectDTO(){
 		
