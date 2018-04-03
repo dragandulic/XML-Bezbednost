@@ -20,6 +20,9 @@ import com.group4bezbednost.bezbednost.data.IssuerData;
 import com.group4bezbednost.bezbednost.data.SubjectData;
 import com.group4bezbednost.bezbednost.model.SSCertificate;
 
+import ch.qos.logback.classic.net.SyslogAppender;
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 
 
 
@@ -42,6 +45,7 @@ public CertificateGenerator() {}
 
 			//Postavljaju se podaci za generisanje sertifiakta
 			X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuerData.getX500name(),
+					
 					new BigInteger(subjectData.getSerialNumber()),
 					subjectData.getStartDate(),
 					subjectData.getEndDate(),

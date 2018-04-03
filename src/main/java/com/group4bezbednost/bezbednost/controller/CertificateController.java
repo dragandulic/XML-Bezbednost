@@ -36,8 +36,27 @@ public class CertificateController {
 		
 		
 		
-		return new MessageResponseDTO("success");
+		return new MessageResponseDTO("success self signed");
 	}
+	
+	
+	@PostMapping("/signed")
+	public MessageResponseDTO createSignedCertificate(@RequestBody SubjectIssuerDTO input){
+		
+		
+		
+		certificateService.signedCertificate(input);
+		
+		
+		return new MessageResponseDTO("success signed");
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }

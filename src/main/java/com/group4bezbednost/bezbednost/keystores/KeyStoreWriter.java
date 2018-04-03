@@ -1,5 +1,6 @@
 package com.group4bezbednost.bezbednost.keystores;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +13,9 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,6 +26,24 @@ public class KeyStoreWriter {
 		// - Privatni kljucevi
 		// - Tajni kljucevi, koji se koriste u simetricnima siframa
 		private KeyStore keyStore;
+		
+		@Value("${keyStore.file}")
+		private String keyStoreFile;
+		
+		@Value("${keyStore.password}")
+		private String keyStorePassword;
+		
+		
+		@PostConstruct
+		private void init()
+		{
+			if(new File(keyStoreFile).exists())
+				loadKeyStore(keyStoreFile, keyStorePassword.toCharArray());
+			else
+				loadKeyStore(null, keyStorePassword.toCharArray());
+		}
+		
+		
 		
 		public KeyStoreWriter() {
 			try {
@@ -70,7 +92,9 @@ public class KeyStoreWriter {
 		
 		public void write(String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
 			try {
+				
 				keyStore.setKeyEntry(alias, privateKey, password, new Certificate[] {certificate});
+				saveKeyStore(keyStoreFile, keyStorePassword.toCharArray());
 			} catch (KeyStoreException e) {
 				e.printStackTrace();
 			}
