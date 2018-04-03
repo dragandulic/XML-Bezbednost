@@ -1,4 +1,4 @@
-package controller;
+package com.group4bezbednost.bezbednost.controller;
 
 
 
@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import data.SubjectData;
-import generators.SubjectDataGenerator;
-import service.CertificateService;
+
+import com.group4bezbednost.bezbednost.service.CertificateService;
+
+
 
 @RestController
 @RequestMapping("/certificates")
@@ -35,7 +36,7 @@ public class CertificateController {
 		
 		
 		
-		return null;
+		return new MessageResponseDTO("success");
 	}
 	
 	

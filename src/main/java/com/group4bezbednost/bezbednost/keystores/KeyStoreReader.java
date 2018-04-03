@@ -1,4 +1,4 @@
-package keystores;
+package com.group4bezbednost.bezbednost.keystores;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -16,11 +16,14 @@ import java.security.cert.X509Certificate;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.springframework.stereotype.Component;
 
-import data.IssuerData;
+import com.group4bezbednost.bezbednost.data.IssuerData;
 
 
 
+
+@Component
 public class KeyStoreReader {
 	//KeyStore je Java klasa za citanje specijalizovanih datoteka koje se koriste za cuvanje kljuceva
 		//Tri tipa entiteta koji se obicno nalaze u ovakvim datotekama su:

@@ -1,6 +1,7 @@
-package generators;
+package com.group4bezbednost.bezbednost.generators;
 
 import java.math.BigInteger;
+import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -9,20 +10,26 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.springframework.stereotype.Component;
 
-import data.IssuerData;
-import data.SubjectData;
+import com.group4bezbednost.bezbednost.data.IssuerData;
+import com.group4bezbednost.bezbednost.data.SubjectData;
+import com.group4bezbednost.bezbednost.model.SSCertificate;
 
 
 
+
+@Component
 public class CertificateGenerator {
 public CertificateGenerator() {}
 	
 	public X509Certificate generateCertificate(SubjectData subjectData, IssuerData issuerData) {
 		try {
+			Security.addProvider(new BouncyCastleProvider());
 			//Posto klasa za generisanje sertifiakta ne moze da primi direktno privatni kljuc pravi se builder za objekat
 			//Ovaj objekat sadrzi privatni kljuc izdavaoca sertifikata i koristiti se za potpisivanje sertifikata
 			//Parametar koji se prosledjuje je algoritam koji se koristi za potpisivanje sertifiakta
@@ -49,7 +56,8 @@ public CertificateGenerator() {}
 			certConverter = certConverter.setProvider("BC");
 
 			//Konvertuje objekat u sertifikat
-			return certConverter.getCertificate(certHolder);
+			 return certConverter.getCertificate(certHolder);
+			
 		} catch (CertificateEncodingException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {

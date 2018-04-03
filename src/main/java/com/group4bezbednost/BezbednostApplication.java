@@ -1,7 +1,8 @@
-package com.group4bezbednost.bezbednost;
+package com.group4bezbednost;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 public class BezbednostApplication {

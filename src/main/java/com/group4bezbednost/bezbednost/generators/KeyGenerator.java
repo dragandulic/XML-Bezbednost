@@ -1,4 +1,4 @@
-package generators;
+package com.group4bezbednost.bezbednost.generators;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -6,6 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
+import org.springframework.stereotype.Component;
+@Component
 public class KeyGenerator {
 
 	

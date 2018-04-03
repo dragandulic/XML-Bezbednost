@@ -1,5 +1,6 @@
-package model;
+package com.group4bezbednost.bezbednost.model;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -16,10 +17,20 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
-public class Certificate extends X509Certificate{
+public class SSCertificate extends X509Certificate implements Serializable{
 
+	
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Long id;
+	
+	
 	@Override
 	public Set<String> getCriticalExtensionOIDs() {
 		// TODO Auto-generated method stub
@@ -165,18 +176,21 @@ public class Certificate extends X509Certificate{
 	}
 
 	@Override
-	public void verify(PublicKey arg0) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException,
+	public void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException,
 			NoSuchProviderException, SignatureException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void verify(PublicKey arg0, String arg1) throws CertificateException, NoSuchAlgorithmException,
+	public void verify(PublicKey key, String sigProvider) throws CertificateException, NoSuchAlgorithmException,
 			InvalidKeyException, NoSuchProviderException, SignatureException {
 		// TODO Auto-generated method stub
 		
-	}	
+	}
+
+	
+		
 	
 	
 	

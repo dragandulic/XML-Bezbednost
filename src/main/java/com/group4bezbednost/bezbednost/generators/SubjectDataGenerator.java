@@ -1,4 +1,4 @@
-package generators;
+package com.group4bezbednost.bezbednost.generators;
 
 import java.security.KeyPair;
 import java.text.ParseException;
@@ -7,12 +7,13 @@ import java.util.Date;
 
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.springframework.stereotype.Component;
 
-import controller.SubjectDTO;
-import data.SubjectData;
+import com.group4bezbednost.bezbednost.controller.SubjectDTO;
+import com.group4bezbednost.bezbednost.data.SubjectData;
 
 
-
+@Component
 public class SubjectDataGenerator {
 
 	
@@ -36,6 +37,7 @@ public class SubjectDataGenerator {
 		    builder.addRDN(BCStyle.O,input.getOrganization());
 		    builder.addRDN(BCStyle.C, input.getState());
 		    builder.addRDN(BCStyle.E,input.getEmail());
+		    //builder.addRDN(BCStyle.SN,input.getSerialnumber());
 		    //UID (USER ID) je ID korisnika
 		    //builder.addRDN(BCStyle.UID, input.getPassword());
 		    

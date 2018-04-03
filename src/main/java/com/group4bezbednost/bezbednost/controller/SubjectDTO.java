@@ -1,4 +1,4 @@
-package controller;
+package com.group4bezbednost.bezbednost.controller;
 
 public class SubjectDTO {
 
