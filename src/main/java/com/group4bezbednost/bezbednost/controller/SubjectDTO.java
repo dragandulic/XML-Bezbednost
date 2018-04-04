@@ -1,5 +1,7 @@
 package com.group4bezbednost.bezbednost.controller;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SubjectDTO {
 
 	
@@ -14,6 +16,7 @@ private	String serialnumber;
 private	String optionalCompanyName;
 private	String startDate;
 private	String endDate;
+@JsonProperty
 private boolean CA;
 	
 	

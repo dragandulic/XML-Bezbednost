@@ -1,5 +1,7 @@
 package com.group4bezbednost.bezbednost.controller;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SubjectIssuerDTO {
 
 	
@@ -13,7 +15,8 @@ public class SubjectIssuerDTO {
 	private	String startDate;
 	private String password;
 	private	String endDate;
-	private String CA;
+	@JsonProperty
+	private boolean CA;
 	private	String issueralias;
 	private String issuerpassword;
 	
@@ -110,13 +113,12 @@ public class SubjectIssuerDTO {
 	public void setIssuerpassword(String issuerpassword) {
 		this.issuerpassword = issuerpassword;
 	}
-	public String getCA() {
+	public boolean isCA() {
 		return CA;
 	}
-	public void setCA(String cA) {
+	public void setCA(boolean cA) {
 		CA = cA;
 	}
-	
 	
 	
 	

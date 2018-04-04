@@ -136,6 +136,12 @@ public class CertificateService {
 				
 		
 		System.out.println(subjectData.getSerialNumber());
+		
+		 if(subjectissuerDTO.isCA()==false){
+	    	   
+	    	   System.out.println("Just certificates with CA==true can be generated");
+	    	   return null;
+	       }
 		X509Certificate signedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
 		keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
 		
