@@ -9,6 +9,7 @@ import java.security.Security;
 import java.security.cert.CertPathValidatorException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Enumeration;
@@ -154,12 +155,66 @@ public class CertificateService {
 	
 	public void checkValidationOCSP(String serialnumber){
 		//online certificate status protocol : sluzi da proverimo stanje u kom se nalazi sertifikat, da li je istekao itd...tj da li je validan
+		KeyStore keyStore;
+	
+		try {
+			 KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+			 BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+				ks.load(in, keyStorePassword.toCharArray());
+			 
+				
+				Enumeration enumeration = ks.aliases();
+				 while(enumeration.hasMoreElements()) {
+				        String alias = (String)enumeration.nextElement();
+				        X509Certificate certificate = (X509Certificate) ks.getCertificate(alias);
+				       
+				        BigInteger serial = certificate.getSerialNumber();
+				        String serialkeystore=serial.toString();
+				        
+				        
+				        if(serialkeystore.equals(serialnumber)){
+				       
+				        	
+				                try {
+				                	 
+				                    certificate.checkValidity();
+				                    System.out.println("Certificate is active for current date");
+				                } catch(CertificateExpiredException cee) {
+				                    System.out.println("Certificate is expired");
+				                }
+				            }
+				        
+				        }
+				 
+			} catch (KeyStoreException e) {
+				e.printStackTrace();
+			} catch (NoSuchProviderException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (CertificateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		
 	
 		
-		//X509Certificate cert = (X509Certificate) keyStoreReader.readCertificate(keystoreFile, keyStorePassword, serialnumber);
+		
+		
+		 
+		
 		
 	}
+		
+	
 	
 	public X509Certificate getCertificate(String serialnumber) {
 		
@@ -182,10 +237,11 @@ public class CertificateService {
 				       
 				        BigInteger serial = certificate.getSerialNumber();
 				        String serialkeystore=serial.toString();
-				        System.out.println(serial+"ovo je iz key stora ");
+				       
 				        
 				        if(serialkeystore.equals(serialnumber)){
-				        System.out.println(serial + "ispisan serijski broj"); 
+				       
+				        
 				        return certificate;
 				        }
 				 }

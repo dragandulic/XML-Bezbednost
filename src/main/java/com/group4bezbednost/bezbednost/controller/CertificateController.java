@@ -69,6 +69,17 @@ public class CertificateController {
 	
 	
 	
+	@GetMapping("getValidity/{id}")
+	public MessageResponseDTO getValidityBySerial(@PathVariable String id){
+		
+		certificateService.checkValidationOCSP(id);
+		
+		
+		
+		
+		return new MessageResponseDTO("Successfully validation");
+	}
+	
 	
 	
 }
