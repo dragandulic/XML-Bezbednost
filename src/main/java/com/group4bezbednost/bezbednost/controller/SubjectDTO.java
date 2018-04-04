@@ -4,16 +4,18 @@ public class SubjectDTO {
 
 	
 	
-	String name;  //John
-	String surname;  //Jackson
-	String organization; // A-Company
-	String state; //RS
-	String email; //acompany@gmail.com
-	String password;
-	String serialnumber;
-	String optionalCompanyName;
-	String startDate;
-	String endDate;
+private	String name;  //John
+private String surname;  //Jackson
+private	String organization; // A-Company
+private	String state; //RS
+private	String email; //acompany@gmail.com
+private	String password;
+private	String serialnumber;
+private	String optionalCompanyName;
+private	String startDate;
+private	String endDate;
+private boolean CA;
+	
 	
 	
 	/*
@@ -32,21 +34,7 @@ public class SubjectDTO {
 
 	 */
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 
 	public SubjectDTO(){
 		
@@ -180,6 +168,18 @@ public class SubjectDTO {
 
 	public void setOptionalCompanyName(String optionalCompanyName) {
 		this.optionalCompanyName = optionalCompanyName;
+	}
+
+
+
+	public boolean isCA() {
+		return CA;
+	}
+
+
+
+	public void setCA(boolean cA) {
+		CA = cA;
 	}
 	
 	

@@ -3,18 +3,19 @@ package com.group4bezbednost.bezbednost.controller;
 public class SubjectIssuerDTO {
 
 	
-	String name;  //John
-	String surname;  //Jackson
-	String organization; // A-Company
-	String state; //RS
-	String email; //acompany@gmail.com
-	String password;
-	String serialnumber;
-	String optionalCompanyName;
-	String startDate;
-	String endDate;
-	String issueralias;
-	String issuerpassword;
+	private	String name;  //John
+	private	String surname;  //Jackson
+	private	String organization; // A-Company
+	private String state; //RS
+	private String email; //acompany@gmail.com
+	private String serialnumber;
+	private	String optionalCompanyName;
+	private	String startDate;
+	private String password;
+	private	String endDate;
+	private String CA;
+	private	String issueralias;
+	private String issuerpassword;
 	
 	/*
 {
@@ -34,19 +35,6 @@ public class SubjectIssuerDTO {
 }
 
 	 */
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -121,6 +109,12 @@ public class SubjectIssuerDTO {
 	}
 	public void setIssuerpassword(String issuerpassword) {
 		this.issuerpassword = issuerpassword;
+	}
+	public String getCA() {
+		return CA;
+	}
+	public void setCA(String cA) {
+		CA = cA;
 	}
 	
 	

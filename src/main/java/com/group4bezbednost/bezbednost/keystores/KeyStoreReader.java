@@ -92,7 +92,7 @@ public class KeyStoreReader {
 				
 				if(ks.isKeyEntry(alias)) {
 					Certificate cert = ks.getCertificate(alias);
-					return cert;
+					
 				}
 			} catch (KeyStoreException e) {
 				e.printStackTrace();
@@ -110,6 +110,16 @@ public class KeyStoreReader {
 			return null;
 		}
 		
+	    
+	   
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
 		/**
 		 * Ucitava privatni kljuc is KS fajla
 		 */
