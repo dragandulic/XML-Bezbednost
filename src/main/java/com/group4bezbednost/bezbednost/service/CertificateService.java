@@ -99,6 +99,7 @@ public class CertificateService {
 		ssc.setAlias(opt);
 		ssc.setCertificateCA(subjectDTO.isCA());
 		ssc.setSerialnum(selfsignedcertificate.getSerialNumber());
+		ssc.setRevoked(false);
 		ssCertificateService.saveSSCertificate(ssc);
 		
 		
@@ -161,7 +162,7 @@ public class CertificateService {
 				SSCertificate ssc=new SSCertificate();
 				ssc.setAlias(opt);
 				ssc.setCertificateCA(subjectissuerDTO.isCA());
-				
+				ssc.setRevoked(false);
 				ssc.setSerialnum(signedcertificate.getSerialNumber());
 				ssCertificateService.saveSSCertificate(ssc);
 				
@@ -298,6 +299,16 @@ public class CertificateService {
 		 
 		
 		return null;
+	}
+	
+	public void revokeCert(String serialnum){
+		
+		BigInteger serial=new BigInteger(serialnum);
+		SSCertificate c=ssCertificateService.findBySerialn(serial);
+		
+		c.setRevoked(true);
+		ssCertificateService.saveSSCertificate(c);
+		
 	}
 	
 }

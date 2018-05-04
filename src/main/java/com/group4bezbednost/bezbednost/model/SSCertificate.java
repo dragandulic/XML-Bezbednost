@@ -38,6 +38,7 @@ public class SSCertificate implements Serializable{
 	
 	private BigInteger serialnum;
 	
+	private boolean isRevoked;
 	
 
 	public Long getId() {
@@ -72,6 +73,14 @@ public class SSCertificate implements Serializable{
 
 	public void setSerialnum(BigInteger serialnum) {
 		this.serialnum = serialnum;
+	}
+
+	public boolean isRevoked() {
+		return isRevoked;
+	}
+
+	public void setRevoked(boolean isRevoked) {
+		this.isRevoked = isRevoked;
 	}
 
 	

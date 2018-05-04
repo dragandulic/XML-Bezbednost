@@ -69,6 +69,11 @@ public class CertificateController {
 	
 	
 	
+	@PostMapping("revokeCertificate/{id}")
+	public MessageResponseDTO revokeCertificateBySerial(@PathVariable String id){
+		
+		return null;
+	}
 	
 	
 	

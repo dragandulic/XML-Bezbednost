@@ -1,6 +1,8 @@
 package com.group4bezbednost.bezbednost.service;
 
+import java.math.BigInteger;
 import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,11 @@ public class SSCertificateService {
 	public List<SSCertificate>findAllCertificates(){
 		
 		return certificateRepository.findAll();
+	}
+	
+	public SSCertificate findBySerialn(BigInteger s){
+		
+		return certificateRepository.findOneBySerialnum(s);
 	}
 	
 
