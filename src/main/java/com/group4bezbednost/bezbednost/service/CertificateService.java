@@ -171,12 +171,6 @@ public class CertificateService {
 				return signedcertificate;
 				
 			
-			
-			
-			
-		
-		
-		
 				
 		
 	}
@@ -308,6 +302,19 @@ public class CertificateService {
 		
 		c.setRevoked(true);
 		ssCertificateService.saveSSCertificate(c);
+		
+	}
+	
+	public String checkRevocation(String serialnum){
+		BigInteger serial=new BigInteger(serialnum);
+		SSCertificate c=ssCertificateService.findBySerialn(serial);
+		if(c.isRevoked()){
+			return new String("revoked");
+		}else{
+			
+			return new String("active");
+		}
+		
 		
 	}
 	

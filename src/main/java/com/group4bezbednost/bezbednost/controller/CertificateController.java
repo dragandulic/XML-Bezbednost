@@ -72,9 +72,19 @@ public class CertificateController {
 	@PostMapping("revokeCertificate/{id}")
 	public MessageResponseDTO revokeCertificateBySerial(@PathVariable String id){
 		
-		return null;
+		certificateService.revokeCert(id);
+		
+		return new MessageResponseDTO("Successfully revoked certificate");
 	}
 	
+	
+	@PostMapping("checkStatus/{id}")
+	public MessageResponseDTO checkRevocation(@PathVariable String id){
+		
+		String answer=certificateService.checkRevocation(id);
+		
+		return new MessageResponseDTO(answer);
+	}
 	
 	
 	
