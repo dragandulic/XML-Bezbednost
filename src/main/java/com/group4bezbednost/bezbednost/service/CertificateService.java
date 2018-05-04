@@ -13,10 +13,13 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import java.math.BigInteger;
+
+import org.bouncycastle.asn1.x500.X500Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -58,7 +61,7 @@ public class CertificateService {
 	private KeyStoreReader keyStoreReader;
 	
 	@Autowired
-	private CertificateRepository certificateRepository;
+	private SSCertificateService ssCertificateService;
 	
 	@Value("${keyStore.file}")
 	private String keyStoreFile;
@@ -88,14 +91,16 @@ public class CertificateService {
        IssuerData issuer = new IssuerData(keyPairSubject.getPrivate(), subjectData.getX500name());
 		
        
-       if(subjectDTO.isCA()==false){
-    	   
-    	   System.out.println("Just certificates with CA==true can be generated");
-    	   return null;
-       }
        
 		X509Certificate selfsignedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
 		keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), selfsignedcertificate);
+		
+		SSCertificate ssc=new SSCertificate();
+		ssc.setAlias(opt);
+		ssc.setCertificateCA(subjectDTO.isCA());
+		ssc.setSerialnum(selfsignedcertificate.getSerialNumber());
+		ssCertificateService.saveSSCertificate(ssc);
+		
 		
 		System.out.println(selfsignedcertificate);
 		return selfsignedcertificate;
@@ -129,26 +134,48 @@ public class CertificateService {
 		KeyPair keyPairSubject = keyGenerator.generateKeyPair();
 		subjectData.setPublicKey(keyPairSubject.getPublic());
 		
-		IssuerData issuer = keyStoreReader.readIssuerFromStore("keystore", 
-				issueralias, 
-				keyStorePassword.toCharArray(), 
-				issuerpass.toCharArray());
-		
+		List<SSCertificate>listc=ssCertificateService.findAllCertificates();
+		for(SSCertificate sssc:listc){
+			
+			if(!(sssc.getAlias().equals(issueralias) && sssc.isCertificateCA()==true)){
 				
+				System.out.println("Only CA certificates can sign other certificates");
+				return null;
+			}
+		}
+				
+				IssuerData issuer = keyStoreReader.readIssuerFromStore("keystore", 
+						issueralias, 
+						keyStorePassword.toCharArray(), 
+						issuerpass.toCharArray());
+				
+						
+				
+			
+				System.out.println(subjectData.getSerialNumber());
+				
+				
+				X509Certificate signedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
+				keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
+				
+				SSCertificate ssc=new SSCertificate();
+				ssc.setAlias(opt);
+				ssc.setCertificateCA(subjectissuerDTO.isCA());
+				
+				ssc.setSerialnum(signedcertificate.getSerialNumber());
+				ssCertificateService.saveSSCertificate(ssc);
+				
+				System.out.println(signedcertificate);
+				
+				return signedcertificate;
+				
+			
+			
+			
+			
 		
-		System.out.println(subjectData.getSerialNumber());
 		
-		 if(subjectissuerDTO.isCA()==false){
-	    	   
-	    	   System.out.println("Just certificates with CA==true can be generated");
-	    	   return null;
-	       }
-		X509Certificate signedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
-		keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
 		
-		System.out.println(signedcertificate);
-		
-		return signedcertificate;
 				
 		
 	}

@@ -69,6 +69,10 @@ public class CertificateController {
 	
 	
 	
+	
+	
+	
+	
 	@GetMapping("getValidity/{id}")
 	public MessageResponseDTO getValidityBySerial(@PathVariable String id){
 		
