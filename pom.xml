@@ -41,7 +41,13 @@
 			<artifactId>bcpkix-jdk15on</artifactId>
 			<version>1.59</version>
 		</dependency>
-
+		
+		<dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>2.3.0</version>
+		</dependency>
+		
         <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
