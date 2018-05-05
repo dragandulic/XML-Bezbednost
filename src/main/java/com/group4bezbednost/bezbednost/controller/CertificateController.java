@@ -6,6 +6,8 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +31,7 @@ public class CertificateController {
 	
 	@PostMapping("/selfsigned")
 	public MessageResponseDTO createSelfSignedCertificate(@RequestBody SubjectDTO input){
-		System.out.println("Dosao u kontrolerrrrrrrrrrrrrrrrrrr");
+
 		certificateService.selfSignedCertificate(input);
 		return new MessageResponseDTO("success self signed");
 	}
@@ -77,10 +79,15 @@ public class CertificateController {
 	}
 	
 	@GetMapping("/getValidCertificates")
-	public List<SSCertificate> getValidCerts(){
+	public ResponseEntity<List<SSCertificate>> getValidCerts(){
+	
+		List<SSCertificate> allvalid = certificateService.getAllValidCertificates();
+
+		if(!(allvalid==null)) {
+			return new ResponseEntity<>(allvalid,HttpStatus.OK);
+		}
 		
-	List<SSCertificate>allvalid=certificateService.getAllValidCertificates();
-		return allvalid;
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	

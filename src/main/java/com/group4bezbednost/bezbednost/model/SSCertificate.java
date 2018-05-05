@@ -30,7 +30,7 @@ public class SSCertificate implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	private String alias;
+	private String issueralias;
 	
 	private boolean certificateCA;
 	
@@ -39,6 +39,10 @@ public class SSCertificate implements Serializable{
 	private BigInteger serialnum;
 	
 	private boolean isRevoked;
+	
+	private String subjectalias;
+	
+	private String subjpassword;
 	
 
 	public Long getId() {
@@ -49,13 +53,6 @@ public class SSCertificate implements Serializable{
 		this.id = id;
 	}
 
-	public String getAlias() {
-		return alias;
-	}
-
-	public void setAlias(String alias) {
-		this.alias = alias;
-	}
 
 	public boolean isCertificateCA() {
 		return certificateCA;
@@ -89,6 +86,30 @@ public class SSCertificate implements Serializable{
 
 	public void setIssuerpass(String issuerpass) {
 		this.issuerpass = issuerpass;
+	}
+
+	public String getSubjectalias() {
+		return subjectalias;
+	}
+
+	public void setSubjectalias(String subjectalias) {
+		this.subjectalias = subjectalias;
+	}
+
+	public String getSubjpassword() {
+		return subjpassword;
+	}
+
+	public void setSubjpassword(String subjpassword) {
+		this.subjpassword = subjpassword;
+	}
+
+	public String getIssueralias() {
+		return issueralias;
+	}
+
+	public void setIssueralias(String issueralias) {
+		this.issueralias = issueralias;
 	}
 
 	

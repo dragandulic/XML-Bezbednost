@@ -11,6 +11,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -96,11 +97,14 @@ public class CertificateService {
 		keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), selfsignedcertificate);
 		
 		SSCertificate ssc=new SSCertificate();
-		ssc.setAlias(opt);
+		ssc.setIssueralias(opt);
+		ssc.setIssuerpass(pass);
 		ssc.setCertificateCA(true);
 		ssc.setSerialnum(selfsignedcertificate.getSerialNumber());
-		ssc.setIssuerpass(pass);
+		
 		ssc.setRevoked(false);
+		ssc.setSubjectalias(opt);
+		ssc.setSubjpassword(pass);
 		ssCertificateService.saveSSCertificate(ssc);
 		
 		
@@ -153,11 +157,13 @@ public class CertificateService {
 				keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
 				
 				SSCertificate ssc=new SSCertificate();
-				ssc.setAlias(opt);
-				ssc.setCertificateCA(true);
+				ssc.setIssueralias(issueralias);
 				ssc.setIssuerpass(issuerpass);
+				ssc.setCertificateCA(true);
 				ssc.setRevoked(false);
 				ssc.setSerialnum(signedcertificate.getSerialNumber());
+				ssc.setSubjectalias(opt);
+				ssc.setSubjpassword(pass);
 				ssCertificateService.saveSSCertificate(ssc);
 				
 				System.out.println(signedcertificate);
@@ -212,11 +218,13 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 				keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
 				
 				SSCertificate ssc=new SSCertificate();
-				ssc.setAlias(opt);
-				ssc.setCertificateCA(false);
+				ssc.setIssueralias(issueralias);
 				ssc.setIssuerpass(issuerpass);
+				ssc.setCertificateCA(false);			
 				ssc.setRevoked(false);
 				ssc.setSerialnum(signedcertificate.getSerialNumber());
+				ssc.setSubjectalias(opt);
+				ssc.setSubjpassword(pass);
 				ssCertificateService.saveSSCertificate(ssc);
 				
 				System.out.println(signedcertificate);
@@ -230,14 +238,15 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 
   public List<SSCertificate>getAllValidCertificates(){
 	  
-	  List<SSCertificate>valid=null;
+	  List<SSCertificate>valid=new ArrayList<>();
 	  List<SSCertificate>all=ssCertificateService.findAllCertificates();
 	  for(int i=0;i<all.size();i++){
 		  String dat=checkValidationOCSP(all.get(i).getSerialnum().toString());
 		  String rev=checkRevocation(all.get(i).getSerialnum().toString());
 		  if(dat.equals("valid") && rev.equals("active") && all.get(i).isCertificateCA()==true){
-			  
+			
 			  valid.add(all.get(i));
+			  
 		  }
 		  
 		  

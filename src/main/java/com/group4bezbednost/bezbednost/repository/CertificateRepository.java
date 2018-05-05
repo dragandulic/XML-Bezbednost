@@ -5,13 +5,14 @@ import java.util.List;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.group4bezbednost.bezbednost.model.SSCertificate;
 
 
 
 
-
+@Repository
 public interface CertificateRepository extends JpaRepository<SSCertificate,Long> {
 
 	
