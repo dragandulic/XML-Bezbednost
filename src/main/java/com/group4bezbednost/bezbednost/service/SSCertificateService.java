@@ -18,7 +18,9 @@ public class SSCertificateService {
 	private CertificateRepository certificateRepository;
 	
 	
-	
+	public SSCertificate getCerOfId(Long id) {
+		return certificateRepository.findOneById(id);
+	}
 	
 	public void saveSSCertificate(SSCertificate ssc){
 		

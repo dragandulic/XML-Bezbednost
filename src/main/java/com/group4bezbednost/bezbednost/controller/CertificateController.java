@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.group4bezbednost.bezbednost.model.SSCertificate;
 import com.group4bezbednost.bezbednost.service.CertificateService;
+import com.group4bezbednost.bezbednost.service.SSCertificateService;
 
 
 @CrossOrigin(origins="http://localhost:4200",allowedHeaders="*")
@@ -27,6 +29,10 @@ public class CertificateController {
 
 	@Autowired
 	private CertificateService certificateService;
+	
+	
+	@Autowired
+	private SSCertificateService sscertificateService; 
 	
 	
 	@PostMapping("/selfsigned")
@@ -43,6 +49,19 @@ public class CertificateController {
 		certificateService.signedCertificate(input);
 		return new MessageResponseDTO("success signed");
 	}
+	
+	@RequestMapping(value="/getCertificateOfId/{id}",method=RequestMethod.GET)
+	public ResponseEntity<SSCertificate> getCertificateOfId(@PathVariable Long id){
+		
+		SSCertificate ssc = sscertificateService.getCerOfId(id);
+		if(!(ssc==null)) {
+			return new ResponseEntity<>(ssc,HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
+	} 
+	
 	
 	@PostMapping("/usersigned")
 	public MessageResponseDTO createUserSignedCertificate(@RequestBody SubjectIssuerDTO input){

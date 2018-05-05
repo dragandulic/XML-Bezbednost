@@ -44,6 +44,7 @@ public class SSCertificate implements Serializable{
 	
 	private String subjpassword;
 	
+	
 
 	public Long getId() {
 		return id;
