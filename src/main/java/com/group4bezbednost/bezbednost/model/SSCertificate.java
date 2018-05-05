@@ -34,7 +34,7 @@ public class SSCertificate implements Serializable{
 	
 	private boolean certificateCA;
 	
-	
+	private String issuerpass;
 	
 	private BigInteger serialnum;
 	
@@ -81,6 +81,14 @@ public class SSCertificate implements Serializable{
 
 	public void setRevoked(boolean isRevoked) {
 		this.isRevoked = isRevoked;
+	}
+
+	public String getIssuerpass() {
+		return issuerpass;
+	}
+
+	public void setIssuerpass(String issuerpass) {
+		this.issuerpass = issuerpass;
 	}
 
 	

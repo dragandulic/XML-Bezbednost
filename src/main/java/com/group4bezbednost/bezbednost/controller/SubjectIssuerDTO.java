@@ -15,8 +15,7 @@ public class SubjectIssuerDTO {
 	private	String startDate;
 	private String password;
 	private	String endDate;
-	@JsonProperty
-	private boolean CA;
+	
 	private	String issueralias;
 	private String issuerpassword;
 	
@@ -113,12 +112,7 @@ public class SubjectIssuerDTO {
 	public void setIssuerpassword(String issuerpassword) {
 		this.issuerpassword = issuerpassword;
 	}
-	public boolean isCA() {
-		return CA;
-	}
-	public void setCA(boolean cA) {
-		CA = cA;
-	}
+	
 	
 	
 	

@@ -97,8 +97,9 @@ public class CertificateService {
 		
 		SSCertificate ssc=new SSCertificate();
 		ssc.setAlias(opt);
-		ssc.setCertificateCA(subjectDTO.isCA());
+		ssc.setCertificateCA(true);
 		ssc.setSerialnum(selfsignedcertificate.getSerialNumber());
+		ssc.setIssuerpass(pass);
 		ssc.setRevoked(false);
 		ssCertificateService.saveSSCertificate(ssc);
 		
@@ -135,15 +136,7 @@ public class CertificateService {
 		KeyPair keyPairSubject = keyGenerator.generateKeyPair();
 		subjectData.setPublicKey(keyPairSubject.getPublic());
 		
-		List<SSCertificate>listc=ssCertificateService.findAllCertificates();
-		for(SSCertificate sssc:listc){
-			
-			if(!(sssc.getAlias().equals(issueralias) && sssc.isCertificateCA()==true)){
-				
-				System.out.println("Only CA certificates can sign other certificates");
-				return null;
-			}
-		}
+		
 				
 				IssuerData issuer = keyStoreReader.readIssuerFromStore("keystore", 
 						issueralias, 
@@ -161,7 +154,8 @@ public class CertificateService {
 				
 				SSCertificate ssc=new SSCertificate();
 				ssc.setAlias(opt);
-				ssc.setCertificateCA(subjectissuerDTO.isCA());
+				ssc.setCertificateCA(true);
+				ssc.setIssuerpass(issuerpass);
 				ssc.setRevoked(false);
 				ssc.setSerialnum(signedcertificate.getSerialNumber());
 				ssCertificateService.saveSSCertificate(ssc);
@@ -175,7 +169,83 @@ public class CertificateService {
 		
 	}
 	
-	public void checkValidationOCSP(String serialnumber){
+public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
+		
+		String issueralias=subjectissuerDTO.getIssueralias();
+		String issuerpass=subjectissuerDTO.getIssuerpassword();
+		
+		String opt=subjectissuerDTO.getOptionalCompanyName();
+		String pass=subjectissuerDTO.getPassword();
+		SubjectDTO sd=new SubjectDTO();
+		
+		sd.setName(subjectissuerDTO.getName());
+		sd.setSurname(subjectissuerDTO.getSurname());
+		sd.setOrganization(subjectissuerDTO.getOrganization());
+		sd.setState(subjectissuerDTO.getState());
+		sd.setEmail(subjectissuerDTO.getEmail());
+		sd.setSerialnumber(subjectissuerDTO.getSerialnumber());
+		sd.setOptionalCompanyName(subjectissuerDTO.getOptionalCompanyName());
+		sd.setStartDate(subjectissuerDTO.getStartDate());
+		sd.setEndDate(subjectissuerDTO.getEndDate());
+		
+		SubjectDataGenerator sdg=new SubjectDataGenerator();
+		SubjectData subjectData=sdg.generateSubjectData(sd);
+		
+		
+		KeyPair keyPairSubject = keyGenerator.generateKeyPair();
+		subjectData.setPublicKey(keyPairSubject.getPublic());
+		
+		
+				
+				IssuerData issuer = keyStoreReader.readIssuerFromStore("keystore", 
+						issueralias, 
+						keyStorePassword.toCharArray(), 
+						issuerpass.toCharArray());
+				
+						
+				
+			
+				System.out.println(subjectData.getSerialNumber());
+				
+				
+				X509Certificate signedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
+				keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
+				
+				SSCertificate ssc=new SSCertificate();
+				ssc.setAlias(opt);
+				ssc.setCertificateCA(false);
+				ssc.setIssuerpass(issuerpass);
+				ssc.setRevoked(false);
+				ssc.setSerialnum(signedcertificate.getSerialNumber());
+				ssCertificateService.saveSSCertificate(ssc);
+				
+				System.out.println(signedcertificate);
+				
+				return signedcertificate;
+				
+			
+				
+		
+	}
+
+  public List<SSCertificate>getAllValidCertificates(){
+	  
+	  List<SSCertificate>valid=null;
+	  List<SSCertificate>all=ssCertificateService.findAllCertificates();
+	  for(int i=0;i<all.size();i++){
+		  String dat=checkValidationOCSP(all.get(i).getSerialnum().toString());
+		  String rev=checkRevocation(all.get(i).getSerialnum().toString());
+		  if(dat.equals("valid") && rev.equals("active") && all.get(i).isCertificateCA()==true){
+			  
+			  valid.add(all.get(i));
+		  }
+		  
+		  
+	  }
+	  return valid;
+  }
+	
+	public String checkValidationOCSP(String serialnumber){
 		//online certificate status protocol : sluzi da proverimo stanje u kom se nalazi sertifikat, da li je istekao itd...tj da li je validan
 		KeyStore keyStore;
 	
@@ -200,9 +270,9 @@ public class CertificateService {
 				                try {
 				                	 
 				                    certificate.checkValidity();
-				                    System.out.println("Certificate is active for current date");
+				                    return "valid";
 				                } catch(CertificateExpiredException cee) {
-				                    System.out.println("Certificate is expired");
+				                    return "nonvalid";
 				                }
 				            }
 				        
@@ -231,7 +301,7 @@ public class CertificateService {
 		
 		
 		
-		 
+		 return "nonvalid";
 		
 		
 	}

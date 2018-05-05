@@ -3,6 +3,7 @@ package com.group4bezbednost.bezbednost.controller;
 
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.group4bezbednost.bezbednost.model.SSCertificate;
 import com.group4bezbednost.bezbednost.service.CertificateService;
 
 
@@ -41,6 +42,12 @@ public class CertificateController {
 		return new MessageResponseDTO("success signed");
 	}
 	
+	@PostMapping("/usersigned")
+	public MessageResponseDTO createUserSignedCertificate(@RequestBody SubjectIssuerDTO input){
+		
+		certificateService.usersignedCertificate(input);
+		return new MessageResponseDTO("success usersigned");
+	}
 	
 	
 	@GetMapping("getCertificate/{id}")
@@ -68,6 +75,14 @@ public class CertificateController {
 		String answer=certificateService.checkRevocation(id);
 		return new MessageResponseDTO(answer);
 	}
+	
+	@GetMapping("/getValidCertificates")
+	public List<SSCertificate> getValidCerts(){
+		
+	List<SSCertificate>allvalid=certificateService.getAllValidCertificates();
+		return allvalid;
+	}
+	
 	
 	
 	

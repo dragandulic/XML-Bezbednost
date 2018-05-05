@@ -16,8 +16,7 @@ private	String serialnumber;
 private	String optionalCompanyName;
 private	String startDate;
 private	String endDate;
-@JsonProperty
-private boolean CA;
+
 	
 	
 	
@@ -175,17 +174,6 @@ private boolean CA;
 
 
 
-	public boolean isCA() {
-		return CA;
-	}
-
-
-
-	public void setCA(boolean cA) {
-		CA = cA;
-	}
-	
-	
 	
 	
 	
