@@ -10,6 +10,7 @@ import java.security.cert.CertPathValidatorException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -118,7 +119,7 @@ public class CertificateService {
 		
 		String issueralias=subjectissuerDTO.getIssueralias();
 		String issuerpass=subjectissuerDTO.getIssuerpassword();
-		
+		System.out.println(issueralias+"bbbbbbbbbbb");
 		String opt=subjectissuerDTO.getOptionalCompanyName();
 		String pass=subjectissuerDTO.getPassword();
 		SubjectDTO sd=new SubjectDTO();
@@ -179,7 +180,7 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 		
 		String issueralias=subjectissuerDTO.getIssueralias();
 		String issuerpass=subjectissuerDTO.getIssuerpassword();
-		
+		System.out.println(issueralias+"bbbbbbbbbbb");
 		String opt=subjectissuerDTO.getOptionalCompanyName();
 		String pass=subjectissuerDTO.getPassword();
 		SubjectDTO sd=new SubjectDTO();
@@ -277,12 +278,12 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 				       
 				        	
 				                try {
-				                	 
-				                    certificate.checkValidity();
-				                    return "valid";
-				                } catch(CertificateExpiredException cee) {
-				                    return "nonvalid";
-				                }
+								certificate.checkValidity();
+								return "valid";
+								}catch(CertificateNotYetValidException cee) {
+								    return "nonvalid";
+								}
+								
 				            }
 				        
 				        }
@@ -374,27 +375,32 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 		return null;
 	}
 	
-	public void revokeCert(String serialnum){
+	public String revokeCert(String serialnum){
 		
 		BigInteger serial=new BigInteger(serialnum);
 		SSCertificate c=ssCertificateService.findBySerialn(serial);
-		
-		c.setRevoked(true);
-		ssCertificateService.saveSSCertificate(c);
+		if(c!=null) {
+			c.setRevoked(true);
+			ssCertificateService.saveSSCertificate(c);
+			return "successfully";
+		}
+		else
+			return "not successfully";
 		
 	}
 	
 	public String checkRevocation(String serialnum){
 		BigInteger serial=new BigInteger(serialnum);
 		SSCertificate c=ssCertificateService.findBySerialn(serial);
-		if(c.isRevoked()){
-			return new String("revoked");
-		}else{
-			
-			return new String("active");
+		if(c!=null) {
+			if(c.isRevoked()){
+				return new String("revoked");
+			}else{			
+				return new String("active");
+			}
 		}
-		
-		
+		else 
+			return "nonexist";
 	}
 	
 }

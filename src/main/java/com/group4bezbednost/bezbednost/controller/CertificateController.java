@@ -87,15 +87,18 @@ public class CertificateController {
 	
 	
 	
-	@PostMapping("revokeCertificate/{id}")
+	@GetMapping("revokeCertificate/{id}")
 	public MessageResponseDTO revokeCertificateBySerial(@PathVariable String id){
 		
-		certificateService.revokeCert(id);
+		String poruka =certificateService.revokeCert(id);
+		if(poruka.equals("not successfully")) {
+			return new MessageResponseDTO("Unsuccessfully revoked certificate");
+		}
 		return new MessageResponseDTO("Successfully revoked certificate");
 	}
 	
 	
-	@PostMapping("checkStatus/{id}")
+	@GetMapping("checkStatus/{id}")
 	public MessageResponseDTO checkRevocation(@PathVariable String id){
 		
 		String answer=certificateService.checkRevocation(id);
