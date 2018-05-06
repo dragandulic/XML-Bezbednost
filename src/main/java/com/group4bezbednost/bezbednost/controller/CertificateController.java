@@ -2,12 +2,15 @@ package com.group4bezbednost.bezbednost.controller;
 
 
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,12 +75,14 @@ public class CertificateController {
 	
 	
 	@GetMapping("getCertificate/{id}")
-	public MessageResponseDTO getCertificateBySerial(@PathVariable String id){
+	public ResponseEntity<?> getCertificateBySerial(@PathVariable String id) throws CertificateEncodingException{
 		
-		X509Certificate cert = certificateService.getCertificate(id);
-
+		Certificate cert = certificateService.getCertificate(id);
+	
 		System.out.println(cert);
-		return new MessageResponseDTO("Successfully get certificate");
+		HashMap<String, String> response = new HashMap<>(); 
+		response.put("certificate", Base64Utils.encodeToString(cert.getEncoded()));
+		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
 	
 	
