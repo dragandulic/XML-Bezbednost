@@ -1,0 +1,2 @@
+INSERT INTO `bezbednost-xml`.`user` (`id`,`email`, `name`, `surname`,`password`,`city`,`active`,`role`) VALUES ('1',"admin.system@gmail.com", 'dragan', 'dulic','222','ns',1,'admin');
+INSERT INTO `bezbednost-xml`.`user` (`id`,`email`, `name`, `surname`,`password`,`city`,`active`,`role`) VALUES ('2',"user@gmail.com", 'pera', 'peric','122','ns',1,'user');

@@ -53,8 +53,7 @@ public class User {
 	
 
 	
-	@Column(name="numberlogin")
-	private int numberlogin;
+
 	
 	public User() {
 		
@@ -162,14 +161,6 @@ public class User {
 
 
 
-	public int getNumberlogin() {
-		return numberlogin;
-	}
-
-
-	public void setNumberlogin(int numberlogin) {
-		this.numberlogin = numberlogin;
-	}
 
 
 	
