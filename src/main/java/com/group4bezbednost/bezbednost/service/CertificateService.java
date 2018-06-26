@@ -45,7 +45,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 
 
@@ -73,6 +76,9 @@ public class CertificateService {
 	private String keyStorePassword;
 	private KeyStore keyStore;
 	
+	@Value("${crl.file}")
+	private String crlFile;
+	
 	
 	
 	
@@ -97,19 +103,7 @@ public class CertificateService {
 		X509Certificate selfsignedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
 		keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), selfsignedcertificate);
 		
-		SSCertificate ssc=new SSCertificate();
-		ssc.setIssueralias(opt);
-		ssc.setIssuerpass(pass);
-		ssc.setCertificateCA(true);
-		ssc.setSerialnum(selfsignedcertificate.getSerialNumber());
 		
-		ssc.setRevoked(false);
-		ssc.setSubjectalias(opt);
-		ssc.setSubjpassword(pass);
-		ssCertificateService.saveSSCertificate(ssc);
-		
-		
-		System.out.println(selfsignedcertificate);
 		return selfsignedcertificate;
 		
 		
@@ -151,23 +145,12 @@ public class CertificateService {
 						
 				
 			
-				System.out.println(subjectData.getSerialNumber());
+				
 				
 				
 				X509Certificate signedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
 				keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
 				
-				SSCertificate ssc=new SSCertificate();
-				ssc.setIssueralias(issueralias);
-				ssc.setIssuerpass(issuerpass);
-				ssc.setCertificateCA(true);
-				ssc.setRevoked(false);
-				ssc.setSerialnum(signedcertificate.getSerialNumber());
-				ssc.setSubjectalias(opt);
-				ssc.setSubjpassword(pass);
-				ssCertificateService.saveSSCertificate(ssc);
-				
-				System.out.println(signedcertificate);
 				
 				return signedcertificate;
 				
@@ -218,17 +201,6 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 				X509Certificate signedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
 				keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
 				
-				SSCertificate ssc=new SSCertificate();
-				ssc.setIssueralias(issueralias);
-				ssc.setIssuerpass(issuerpass);
-				ssc.setCertificateCA(false);			
-				ssc.setRevoked(false);
-				ssc.setSerialnum(signedcertificate.getSerialNumber());
-				ssc.setSubjectalias(opt);
-				ssc.setSubjpassword(pass);
-				ssCertificateService.saveSSCertificate(ssc);
-				
-				System.out.println(signedcertificate);
 				
 				return signedcertificate;
 				
@@ -237,81 +209,51 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 		
 	}
 
-  public List<SSCertificate>getAllValidCertificates(){
-	  
-	  List<SSCertificate>valid=new ArrayList<>();
-	  List<SSCertificate>all=ssCertificateService.findAllCertificates();
-	  for(int i=0;i<all.size();i++){
-		  String dat=checkValidationOCSP(all.get(i).getSerialnum().toString());
-		  String rev=checkRevocation(all.get(i).getSerialnum().toString());
-		  if(dat.equals("valid") && rev.equals("active") && all.get(i).isCertificateCA()==true){
-			
-			  valid.add(all.get(i));
-			  
-		  }
-		  
-		  
-	  }
-	  return valid;
-  }
+
+public String checkValidation(String serialnumber) throws ClassNotFoundException, IOException{
 	
-	public String checkValidationOCSP(String serialnumber){
+	
+	String e;
+	try {
+		e = checkExpiration(serialnumber);
+		if(e.equals("nonexpired"))
+		return "valid";
+	} catch (CertificateExpiredException e1) {
+		// TODO Auto-generated catch block
+		
+		return "expired";
+	}
+	
+	return "expired";
+	
+}
+
+
+
+
+ 
+	
+	public String checkExpiration(String serialnumber) throws CertificateExpiredException{
 		//online certificate status protocol : sluzi da proverimo stanje u kom se nalazi sertifikat, da li je istekao itd...tj da li je validan
 		KeyStore keyStore;
 	
-		try {
-			 KeyStore ks = KeyStore.getInstance("JKS", "SUN");
-			 BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
-				ks.load(in, keyStorePassword.toCharArray());
-			 
-				
-				Enumeration enumeration = ks.aliases();
-				 while(enumeration.hasMoreElements()) {
-				        String alias = (String)enumeration.nextElement();
-				        X509Certificate certificate = (X509Certificate) ks.getCertificate(alias);
-				       
-				        BigInteger serial = certificate.getSerialNumber();
-				        String serialkeystore=serial.toString();
-				        
-				        
-				        if(serialkeystore.equals(serialnumber)){
-				       
+		X509Certificate certificate=getCertificate(serialnumber);
+		
 				        	
 				                try {
 								certificate.checkValidity();
-								return "valid";
+								
+								return "nonexpired";
+								
 								}catch(CertificateNotYetValidException cee) {
-								    return "nonvalid";
+								    return "expired";
 								}
 								
-				            }
-				        
-				        }
-				 
-			} catch (KeyStoreException e) {
-				e.printStackTrace();
-			} catch (NoSuchProviderException e) {
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (CertificateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				         
+			
 		
 		
 	
-		
-		
-		
-		 return "nonvalid";
 		
 		
 	}
@@ -375,32 +317,147 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 		return null;
 	}
 	
-	public String revokeCert(String serialnum){
+public ArrayList<X509Certificate> getValidCertificates() throws ClassNotFoundException {
 		
-		BigInteger serial=new BigInteger(serialnum);
-		SSCertificate c=ssCertificateService.findBySerialn(serial);
-		if(c!=null) {
-			c.setRevoked(true);
-			ssCertificateService.saveSSCertificate(c);
-			return "successfully";
-		}
-		else
-			return "not successfully";
+		//X509Certificate x=(X509Certificate) keyStoreReader.readCertificate("keystore","root", serialnumber);
+	
+		 KeyStore keyStore;
+		 ArrayList<X509Certificate>list=new ArrayList<X509Certificate>();
+		 
+		 
+		 try {
+			 KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+			 BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+				ks.load(in, keyStorePassword.toCharArray());
+			 
+				
+				Enumeration enumeration = ks.aliases();
+				System.out.println("INICIRAO ENUMERATION");
+				 while(enumeration.hasMoreElements()) {
+						System.out.println("USAO U WHILE");
+				        String alias = (String)enumeration.nextElement();
+				        X509Certificate certificate = (X509Certificate) ks.getCertificate(alias);
+				        BigInteger serial = certificate.getSerialNumber();
+				        String serialkeystore=serial.toString();
+				       
+				     String check=checkValidation(serialkeystore);
+				     if(check.equals("valid")){
+				    	 System.out.println("usao u if");
+				    	list.add(certificate); 
+				    	System.out.println("DODAO SERT U LISTU");
+				     }
+				     
+				 }
+				 
+				        
+				       
+				 
+			} catch (KeyStoreException e) {
+				e.printStackTrace();
+			} catch (NoSuchProviderException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (CertificateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		
+		
+	
+		
+		
+		
+		 
+		
+		return list;
 	}
 	
-	public String checkRevocation(String serialnum){
-		BigInteger serial=new BigInteger(serialnum);
-		SSCertificate c=ssCertificateService.findBySerialn(serial);
-		if(c!=null) {
-			if(c.isRevoked()){
-				return new String("revoked");
-			}else{			
-				return new String("active");
-			}
+	public String revokeCert(String serialnum) throws IOException, ClassNotFoundException{
+		
+		X509Certificate cert = getCertificate(serialnum);
+		if(cert==null){
+			return "This certificate doesnt exist";
 		}
-		else 
-			return "nonexist";
-	}
+		
+		ArrayList<X509Certificate> listCert = new ArrayList<>();
+		
+		//FileInputStream fis = new FileInputStream(crlFile);
+	//	ObjectInputStream ois = new ObjectInputStream(fis);
+	//	listCert = (ArrayList<X509Certificate>) ois.readObject();
+		
+		//if(listCert!=null){
+	//	return "Certificate already revoked";	
+		
+			
+			
+			listCert.add(cert);
+			FileOutputStream fos = new FileOutputStream(crlFile);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(listCert);
+			oos.close();
+		
+		
+		
+		
+		return "Successfully revoked certificate";
+		}
+	
+	
+	public String checkRevocation(String serialnum) throws IOException, ClassNotFoundException{ // provera da li je sertifikat povucen
+		BigInteger serial=new BigInteger(serialnum);
+         X509Certificate cer=getCertificate(serialnum); 
+         if(cer==null){
+        	 
+        	return "This certificate is not generated"; 
+         }
+         
+         
+         FileInputStream fos = new FileInputStream(crlFile);
+         
+ 		ObjectInputStream oos = new ObjectInputStream(fos);
+ 		ArrayList<X509Certificate> listCert = (ArrayList<X509Certificate>) oos.readObject();
+ 		System.out.println(listCert.get(0));
+ 		oos.close();
+ 		
+ 		if(listCert.contains(cer)){
+ 			return "revocated";
+ 		}
+ 		else{
+ 			return "not revocated";
+ 		}
+ 	
+ 	}
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+      
 	
 }
