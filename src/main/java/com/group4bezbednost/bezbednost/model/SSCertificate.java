@@ -32,19 +32,9 @@ public class SSCertificate implements Serializable{
 	
 	private String issueralias;
 	
-	private boolean certificateCA;
-	
 	private String issuerpass;
 	
-	private BigInteger serialnum;
-	
-	private boolean isRevoked;
-	
-	private String subjectalias;
-	
-	private String subjpassword;
-	
-	
+	private String serialnumber;
 
 	public Long getId() {
 		return id;
@@ -52,57 +42,6 @@ public class SSCertificate implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-
-	public boolean isCertificateCA() {
-		return certificateCA;
-	}
-
-	public void setCertificateCA(boolean certificateCA) {
-		this.certificateCA = certificateCA;
-	}
-
-	
-
-	public BigInteger getSerialnum() {
-		return serialnum;
-	}
-
-	public void setSerialnum(BigInteger serialnum) {
-		this.serialnum = serialnum;
-	}
-
-	public boolean isRevoked() {
-		return isRevoked;
-	}
-
-	public void setRevoked(boolean isRevoked) {
-		this.isRevoked = isRevoked;
-	}
-
-	public String getIssuerpass() {
-		return issuerpass;
-	}
-
-	public void setIssuerpass(String issuerpass) {
-		this.issuerpass = issuerpass;
-	}
-
-	public String getSubjectalias() {
-		return subjectalias;
-	}
-
-	public void setSubjectalias(String subjectalias) {
-		this.subjectalias = subjectalias;
-	}
-
-	public String getSubjpassword() {
-		return subjpassword;
-	}
-
-	public void setSubjpassword(String subjpassword) {
-		this.subjpassword = subjpassword;
 	}
 
 	public String getIssueralias() {
@@ -113,13 +52,22 @@ public class SSCertificate implements Serializable{
 		this.issueralias = issueralias;
 	}
 
-	
+	public String getIssuerpass() {
+		return issuerpass;
+	}
 
+	public void setIssuerpass(String issuerpass) {
+		this.issuerpass = issuerpass;
+	}
+
+	public String getSerialnumber() {
+		return serialnumber;
+	}
+
+	public void setSerialnumber(String serialnumber) {
+		this.serialnumber = serialnumber;
+	}
 	
-	
-	
-	
-		
 	
 	
 	

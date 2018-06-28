@@ -9,6 +9,7 @@ public class SubjectIssuerDTO {
 	private	String surname;  //Jackson
 	private	String organization; // A-Company
 	private String state; //RS
+	
 	private String email; //acompany@gmail.com
 	private String serialnumber;
 	private	String optionalCompanyName;
@@ -16,8 +17,8 @@ public class SubjectIssuerDTO {
 	private String password;
 	private	String endDate;
 	
-	private	String issueralias;
-	private String issuerpassword;
+	
+	
 	
 	/*
 {
@@ -100,19 +101,6 @@ public class SubjectIssuerDTO {
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
-	public String getIssueralias() {
-		return issueralias;
-	}
-	public void setIssueralias(String issueralias) {
-		this.issueralias = issueralias;
-	}
-	public String getIssuerpassword() {
-		return issuerpassword;
-	}
-	public void setIssuerpassword(String issuerpassword) {
-		this.issuerpassword = issuerpassword;
-	}
-	
 	
 	
 	

@@ -79,6 +79,8 @@ public class CertificateService {
 	@Value("${crl.file}")
 	private String crlFile;
 	
+	private  ArrayList<X509Certificate>list=new ArrayList<X509Certificate>();
+	
 	
 	
 	
@@ -104,15 +106,23 @@ public class CertificateService {
 		keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), selfsignedcertificate);
 		
 		
+		//callList(selfsignedcertificate);
+		SSCertificate temp=new SSCertificate();
+		temp.setIssueralias(opt);
+		temp.setIssuerpass(pass);
+		temp.setSerialnumber(subjectDTO.getSerialnumber());
+		ssCertificateService.saveSSCertificate(temp);
+		
 		return selfsignedcertificate;
 		
 		
 	}
 	
-	public X509Certificate signedCertificate(SubjectIssuerDTO subjectissuerDTO){
+	public X509Certificate signedCertificate(SubjectIssuerDTO subjectissuerDTO,String issueraliasform){
 		
-		String issueralias=subjectissuerDTO.getIssueralias();
-		String issuerpass=subjectissuerDTO.getIssuerpassword();
+		String issueralias=issueraliasform;
+		String issuerpass=ssCertificateService.getPassByAlias(issueralias);
+		//String issuerpass=subjectissuerDTO.getIssuerpassword();
 		System.out.println(issueralias+"bbbbbbbbbbb");
 		String opt=subjectissuerDTO.getOptionalCompanyName();
 		String pass=subjectissuerDTO.getPassword();
@@ -151,6 +161,14 @@ public class CertificateService {
 				X509Certificate signedcertificate =  certificateGenerator.generateCertificate(subjectData, issuer);
 				keyStoreWriter.write(opt, keyPairSubject.getPrivate(), pass.toCharArray(), signedcertificate);
 				
+				//callList(signedcertificate);
+				SSCertificate temp=new SSCertificate();
+				temp.setIssueralias(issueralias);
+				temp.setIssuerpass(issuerpass);
+				temp.setSerialnumber(subjectissuerDTO.getSerialnumber());
+				ssCertificateService.saveSSCertificate(temp);
+				
+				
 				
 				return signedcertificate;
 				
@@ -160,7 +178,7 @@ public class CertificateService {
 	}
 	
 public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
-		
+		/*
 		String issueralias=subjectissuerDTO.getIssueralias();
 		String issuerpass=subjectissuerDTO.getIssuerpassword();
 		System.out.println(issueralias+"bbbbbbbbbbb");
@@ -206,34 +224,19 @@ public X509Certificate usersignedCertificate(SubjectIssuerDTO subjectissuerDTO){
 				
 			
 				
-		
+*/		
+	return null;
 	}
 
 
-public String checkValidation(String serialnumber) throws ClassNotFoundException, IOException{
-	
-	
-	String e;
-	try {
-		e = checkExpiration(serialnumber);
-		if(e.equals("nonexpired"))
-		return "valid";
-	} catch (CertificateExpiredException e1) {
-		// TODO Auto-generated catch block
-		
-		return "expired";
-	}
-	
-	return "expired";
-	
-}
+
 
 
 
 
  
 	
-	public String checkExpiration(String serialnumber) throws CertificateExpiredException{
+	public String checkExpiration(String serialnumber) throws CertificateNotYetValidException {
 		//online certificate status protocol : sluzi da proverimo stanje u kom se nalazi sertifikat, da li je istekao itd...tj da li je validan
 		KeyStore keyStore;
 	
@@ -243,9 +246,10 @@ public String checkValidation(String serialnumber) throws ClassNotFoundException
 				                try {
 								certificate.checkValidity();
 								
+								
 								return "nonexpired";
 								
-								}catch(CertificateNotYetValidException cee) {
+								}catch(CertificateExpiredException cee) {
 								    return "expired";
 								}
 								
@@ -322,7 +326,7 @@ public ArrayList<X509Certificate> getValidCertificates() throws ClassNotFoundExc
 		//X509Certificate x=(X509Certificate) keyStoreReader.readCertificate("keystore","root", serialnumber);
 	
 		 KeyStore keyStore;
-		 ArrayList<X509Certificate>list=new ArrayList<X509Certificate>();
+		
 		 
 		 
 		 try {
@@ -332,22 +336,34 @@ public ArrayList<X509Certificate> getValidCertificates() throws ClassNotFoundExc
 			 
 				
 				Enumeration enumeration = ks.aliases();
-				System.out.println("INICIRAO ENUMERATION");
+				
 				 while(enumeration.hasMoreElements()) {
-						System.out.println("USAO U WHILE");
+						
 				        String alias = (String)enumeration.nextElement();
 				        X509Certificate certificate = (X509Certificate) ks.getCertificate(alias);
 				        BigInteger serial = certificate.getSerialNumber();
 				        String serialkeystore=serial.toString();
 				       
-				     String check=checkValidation(serialkeystore);
-				     if(check.equals("valid")){
-				    	 System.out.println("usao u if");
+				        System.out.println("Upravo proveravam ovaj sertifikat: "+serialkeystore);
+				     String check=checkExpiration(serialkeystore);
+				     System.out.println("Upravo proveravam ovaj sertifikat: "+serialkeystore);
+					 String r=checkRevocation(serialkeystore);
+					 System.out.println(r+" da li je povucen ili nije"+" provera za"+serialkeystore);
+			    	 Long sert=ssCertificateService.getIdBySerial(serialkeystore);
+				     if(check.equals("nonexpired") && r.equals("not revocated")){
+				    	 System.out.println(serialkeystore +" je validan!");
+				    	 
 				    	list.add(certificate); 
-				    	System.out.println("DODAO SERT U LISTU");
+				    	 }else{
+				    		 
+				    		 
+				    		 if(list.contains(certificate)){
+				    			 list.remove(certificate);
+				    		 }
+				    	 }
 				     }
 				     
-				 }
+				 
 				 
 				        
 				       
@@ -436,10 +452,74 @@ public ArrayList<X509Certificate> getValidCertificates() throws ClassNotFoundExc
  	
  	}
          
+     public String getAlias(String serialnum){
+    	 
+    	 
+		 try {
+			 KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+			 BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+				ks.load(in, keyStorePassword.toCharArray());
+			 
+				
+				Enumeration enumeration = ks.aliases();
+				 while(enumeration.hasMoreElements()) {
+				        String alias = (String)enumeration.nextElement();
+				        X509Certificate certificate = (X509Certificate) ks.getCertificate(alias);
+				       
+				        BigInteger serial = certificate.getSerialNumber();
+				        String serialkeystore=serial.toString();
+				       
+				        
+				        if(serialkeystore.equals(serialnum)){
+				       
+				        
+				        return alias;
+				        }
+				 }
+			} catch (KeyStoreException e) {
+				e.printStackTrace();
+			} catch (NoSuchProviderException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (CertificateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		
+	
+		
+		
+		
+		 
+		
+		return null;
+    	 
+     }
+
+	public ArrayList<X509Certificate> getList() {
+		return list;
+	}
+
+	public void setList(ArrayList<X509Certificate> list) {
+		this.list = list;
+	}
          
          
-         
-         
+         public void callList(X509Certificate cert){
+        	 
+        	 list.add(cert);
+        	
+        	 
+         }
          
          
          

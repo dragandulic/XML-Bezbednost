@@ -27,15 +27,14 @@ public class SSCertificateService {
 		certificateRepository.save(ssc);
 	}
 	
-	public List<SSCertificate>findAllCertificates(){
+	public String getPassByAlias(String alias){
 		
-		return certificateRepository.findAll();
+		return certificateRepository.findPasswordByAlias(alias);
 	}
 	
-	public SSCertificate findBySerialn(BigInteger s){
+public Long getIdBySerial(String s){
 		
-		return certificateRepository.findOneBySerialnum(s);
+		return certificateRepository.findIdByAlias(s);
 	}
-	
 
 }

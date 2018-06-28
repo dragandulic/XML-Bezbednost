@@ -26,6 +26,8 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.cert.X509Certificate;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigInteger;
+
 import com.group4bezbednost.bezbednost.model.SSCertificate;
 import com.group4bezbednost.bezbednost.service.CertificateDecoder;
 import com.group4bezbednost.bezbednost.service.CertificateService;
@@ -53,10 +55,10 @@ public class CertificateController {
 	}
 	
 	
-	@PostMapping("/signed")
-	public MessageResponseDTO createSignedCertificate(@RequestBody SubjectIssuerDTO input){
+	@PostMapping("/signed/{issueralias}")
+	public MessageResponseDTO createSignedCertificate(@RequestBody SubjectIssuerDTO input,@PathVariable String issueralias){
 		
-		certificateService.signedCertificate(input);
+		certificateService.signedCertificate(input,issueralias);
 		return new MessageResponseDTO("success signed");
 	}
 	
@@ -125,20 +127,24 @@ public class CertificateController {
 		List<String>iss=new ArrayList<String>();
 		IssuerResponse ir=new IssuerResponse(iss);
 	
-		System.out.println("USAO U CONTROLLER GET VALID ISSUERS");
+		
 		List<X509Certificate> allvalid = certificateService.getValidCertificates();
-		System.out.println("PROSAO METODU GET VALID CERTIFICATES");
+		
 		if(allvalid.isEmpty()) {
-			System.out.println("vraca null");
+		
 			ir.getIssuers().add("no valid issuers");
 			return ir;
 		}
-		System.out.println(allvalid.get(0).getIssuerDN().getName());
-		
+	 
+	 		
 		for(int i=0;i<allvalid.size();i++){
 			
+			 BigInteger al=allvalid.get(i).getSerialNumber();
+			  String serial=al+"";
+			  String aliass=certificateService.getAlias(serial);
 			
-			ir.getIssuers().add(allvalid.get(i).getIssuerDN().getName());
+			
+			ir.getIssuers().add(aliass);
 		}
 		
 		if(ir.getIssuers().isEmpty()){
